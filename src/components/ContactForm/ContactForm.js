@@ -1,66 +1,62 @@
 import { Component } from 'react';
-import { v4 as uuid } from 'uuid';
-
-const INITIAL_STATE = {
-  name: '',
-  phone: '',
-};
+import PropTypes from 'prop-types';
+import s from './ContactForm.module.scss';
 
 class ContactForm extends Component {
-  state = { INITIAL_STATE };
+  state = {
+    name: '',
+    number: '',
+  };
 
-  handleChangeForm = ({ target }) => {
-    const { name, value } = target;
+  handleChange = e => {
+    const { name, value } = e.currentTarget;
+
     this.setState({ [name]: value });
   };
 
-  handleFormSubmit = (e) => {
-    e.preventDeafult();
+  handleSubmit = e => {
+    e.preventDefault();
 
-    const { name, phone } = this.state;
-    const { onAdd } = this.props;
+    this.props.onSubmit(this.state);
 
-    const isValidateForm = this.validateForm();
-
-    if (!isValidateForm) return;
-
-    onAdd({ id: uuid(), name, phone });
-    this.resetForm();
+    this.setState({ name: '', number: '' });
   };
-
-  validateForm = () => {
-    const { name, phone } = this.state;
-    const { onCheckUnique } = this.props;
-    if (!name || !phone) {
-      alert('Some filed is empty');
-      return false;
-    }
-    return onCheckUnique(name);
-  };
-
-  resetForm = () => this.setState(INITIAL_STATE);
 
   render() {
-    const { name, phone } = this.state;
+    const { name, number } = this.state;
     return (
-      <form onSubmit={this.handleFormSubmit}>
-        <input
-          type="text"
-          name="phone"
-          placeholder="Énter phone number"
-          value={name}
-          onChange={this.handleChangeForm}
-        />
-        <input
-          type="tel"
-          name="name"
-          placeholder="Énter name"
-          value={phone}
-          onChange={this.handleChangeForm}
-        />
-        <button type="submit">Add Contact</button>
+      <form className={s.form} onSubmit={this.handleSubmit}>
+        <label className={s.label}>
+          <input
+            className={s.input}
+            type="text"
+            name="name"
+            value={name}
+            onChange={this.handleChange}
+            placeholder="Enter name"
+          />
+        </label>
+        <label className={s.label}>
+
+          <input
+            className={s.input}
+            type="text"
+            name="number"
+            value={number}
+            onChange={this.handleChange}
+            placeholder="Enter number"
+          />
+        </label>
+        <button className={s.btn} type="submit">
+          Add contact
+        </button>
       </form>
     );
   }
 }
+
+ContactForm.propTypes = {
+  onSubmit: PropTypes.func.isRequired,
+};
+
 export default ContactForm;
